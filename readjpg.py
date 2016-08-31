@@ -1,7 +1,7 @@
 import os
 
 from cImg import SombraImage
-from glitch import Glitch, Glitchs, SombraMessage
+from glitch import Glitch, Glitchs, SombraMessage, FixeGlitch
 from mcuPixelReader import MCU_Info
 from mcuPixelReader.compare import CompareRow
 from util import coordinate, MinMax
@@ -38,37 +38,37 @@ mod_f = SombraImage(imgs_mod_folder + imgs[1] + extansion, McuInfo)
 max_fix1 = 16
 max_fix2 = 16
 
-for y_row in range(0,20):
-    score = CompareRow(y_row,ori_f, mod_f)
-    msg = 'Row #' + str(y_row) + ': ' + score.Print()
-    logFile.write(msg)
-    print (msg)
+# for y_row in range(0,20):
+#     score = CompareRow(y_row,ori_f, mod_f)
+#     msg = 'Row #' + str(y_row) + ': ' + score.Print()
+#     logFile.write(msg)
+#     print (msg)
+#
+# score = CompareRow(17,ori_f, mod_f)
+# for s in score.score:
+#     print((s))
+#     logFile.write(s.Print())
 
-score = CompareRow(17,ori_f, mod_f)
-for s in score.score:
-    print((s))
-    logFile.write(s.Print())
 
-
-#for glitch in Glitchs.glitch:
-    #glitchRes = []
-    #sombra_msg.Add(mod_f, glitch.GetGlitchAddress())
-    #if not glitch.AsFix():
-        #for addres1 in range(0,max_fix1):
-            #for addres2 in range(0,max_fix2):
+for glitch in Glitchs.glitch:
+    glitchRes = []
+    sombra_msg.Add(mod_f, glitch.GetGlitchAddress())
+    if not glitch.AsFix():
+        for addres1 in range(0,max_fix1):
+            for addres2 in range(0,max_fix2):
                 #Get the replacing character
-                #tryfix = (addres1*16) + addres2
-                #print(tryfix)
-                #if tryfix>254:
-#                    break
-# modifyImage the image
-                #newFile = FixeGlitch(ori_f, mod_f, glitch, tryfix)
-                #newFile.close()
+                tryfix = (addres1*16) + addres2
+                print(tryfix)
+                if tryfix>254:
+                   break
+#modifyImage the image
+                newFile = FixeGlitch(ori_f, mod_f, glitch, tryfix)
+                newFile.close()
 
 
-    #msg = Glitchs.glitch[0].result.Print()
-    #print(msg)
-    #logFile.write(msg)
+    msg = Glitchs.glitch[0].result.Print()
+    print(msg)
+    logFile.write(msg)
 
 ori_f.close()
 mod_f.close()

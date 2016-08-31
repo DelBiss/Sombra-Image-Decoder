@@ -20,8 +20,8 @@ def CompareMCU(mcu_coordinate, img1, img2):
 
 
 def CompareResult(mcu_coordinate, img1, img2):
-    score = cScore.RangeScore(img1.MCUInfo.testRange)
-    for testOffset in range(img1.MCUInfo.testRange.min, img1.MCUInfo.testRange.max):
+    score = cScore.RangeScore(img1.mcuInfo.testRange)
+    for testOffset in range(img1.mcuInfo.testRange.min, img1.mcuInfo.testRange.max):
         test_coordinate = img1.ValidateMcuCoordinate(coordinate(mcu_coordinate.x + testOffset, mcu_coordinate.y))
         score.AddScore(CompareMCU(test_coordinate, img1, img2))
     return score
