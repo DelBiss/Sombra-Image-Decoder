@@ -1,6 +1,5 @@
 #execfile('readjpg.py')
 
-from cImg import SombraImg
 
 class jpgReader:
     def __init__(self):

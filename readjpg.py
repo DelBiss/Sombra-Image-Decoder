@@ -1,9 +1,10 @@
-
-from cImg import SombraImg
-from util import CompareRow, FixeGlitch, coordinate, MinMax, Glitch, Glitchs, SombraMessage, SombraGlitch, CompareResult
-from cMCU import MCU, MCU_Info
-import cScore
 import os
+
+from cImg import SombraImage
+from glitch import Glitch, Glitchs, SombraMessage
+from mcuPixelReader import MCU_Info
+from mcuPixelReader.compare import CompareRow
+from util import coordinate, MinMax
 
 imgs_folder = os.path.join("Reaper")
 imgs_mod_folder = os.path.join("Reaper")
@@ -31,8 +32,8 @@ result=[]
 McuInfo = MCU_Info(coordinate(0,0), coordinate(239,137),MinMax(0,2))
 logFile = open( 'log_row' + '.txt','w')
 #logFile = open( imgs_mod_folder + imgs[1] +'_log_p_' + '%02x'%(Glitchs.glitch[0].GetGlitchAddress())+'_'+ str(Glitchs.glitch[0].GetGlitchCoordinate().x) +'_'+ str(McuInfo.testRange.max) + '.txt','w')
-ori_f =  SombraImg(imgs_folder+imgs[0]+extansion, McuInfo)
-mod_f =  SombraImg(imgs_mod_folder+imgs[1]+extansion, McuInfo)
+ori_f = SombraImage(imgs_folder + imgs[0] + extansion, McuInfo)
+mod_f = SombraImage(imgs_mod_folder + imgs[1] + extansion, McuInfo)
 
 max_fix1 = 16
 max_fix2 = 16
@@ -60,7 +61,7 @@ for s in score.score:
                 #print(tryfix)
                 #if tryfix>254:
 #                    break
-                #Modify the image
+# modifyImage the image
                 #newFile = FixeGlitch(ori_f, mod_f, glitch, tryfix)
                 #newFile.close()
 

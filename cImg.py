@@ -1,91 +1,95 @@
-from PIL import Image
 import os
 from shutil import copyfile
-from util import coordinate, MinMax
 
-class SombraImg:
+from PIL import Image
 
-    def __init__(self, path, MCUInfo):
+from util import coordinate
+
+
+class SombraImage:
+    def __init__(self, path, mcuInfo):
+        # type: (str, mcuInfo) -> SombraImage
+        """
+
+        :rtype: SombraImage
+        :param path: Path to the imagefile to use
+        :param mcuInfo: Imformation on the MCU used by this Image
+        """
+        self.image = None
+        self.bytesStream = None
         self.path = path
         self.directory = os.path.dirname(path)
         self.filename = os.path.split(path)[1].rsplit('.',1)[0]
         self.extension = os.path.split(path)[1].rsplit('.',1)[1]
-        self.MCUInfo = MCUInfo
-        self.imgIsReady = False
-        self.streamIsReady = False
+        self.mcuInfo = mcuInfo
 
     def close(self):
-        self.Reload()
+        if self.image is not None:
+            self.image = None
+        if self.bytesStream is not None:
+            self.bytesStream.close()
+            self.bytesStream = None
 
     def GetStream(self):
-        self.OpenStream()
-        return self.stream
+        self.openBytesStream()
+        return self.bytesStream
 
-    def OpenStream(self):
-        if not self.streamIsReady:
-            self.stream = open(self.path, 'r+b')
-            self.streamIsReady = True
+    def openBytesStream(self):
+        if self.bytesStream is None:
+            self.bytesStream = open(self.path, 'r+b')
 
-    def GetImg(self):
-        self.OpenImg()
-        return self.img
+    def getImage(self):
+        self.openImage()
+        return self.image
 
-    def OpenImg(self):
-        if not self.imgIsReady:
-            self.img = Image.open(self.path).load()
-            self.imgIsReady = True
+    def openImage(self):
+        if self.image is None:
+            self.image = Image.open(self.path).load()
 
-    def Reload(self):
-        if self.imgIsReady:
-            self.img = None
-            self.imgIsReady = False
-        if self.streamIsReady:
-            self.stream.close()
-            self.streamIsReady = False
+    def reload(self):
+        self.close()
 
-    def GetCopyImage(self, newPath):
+    def createCopy(self, newPath):
         directory = os.path.dirname(newPath)
         if not os.path.exists(directory):
             os.makedirs(directory)
         copyfile(self.path, newPath)
        # print('Creating new file: ' + newPath)
-        return SombraImg(newPath, self.MCUInfo)
+        return SombraImage(newPath, self.mcuInfo)
 
+    def modifyImage(self, adress, value):
+        self.openBytesStream()
+        self.bytesStream.seek(adress)
+        self.bytesStream.write(chr(value))
+        self.reload()
 
-    def Modify(self, adress, value):
-        self.OpenStream()
-        self.stream.seek(adress)
-        self.stream.write(chr(value))
-        self.Reload()
+    def getValueAt(self, adress):
+        self.openBytesStream()
+        self.bytesStream.seek(adress)
+        return self.bytesStream.read(1)
 
-    def GetValueAt(self,adress):
-        self.OpenStream()
-        self.stream.seek(adress)
-        return self.stream.read(1)
+    def generateModifiedImage(self, iAdress, iNewValue):
 
-    def GetNewSombraImg(self, adress, value):
-
-        fileAdress = self.filename + '_' + '%02x'%adress
-        newPath = os.path.join(self.directory, fileAdress, fileAdress + '_' + '%02x'%value + '.' + self.extension )
+        fileAdress = self.filename + '_' + '%02x' % iAdress
+        newPath = os.path.join(self.directory, fileAdress, fileAdress + '_' + '%02x' % iNewValue + '.' + self.extension)
         if os.path.isfile(newPath):
-            return SombraImg(newPath, self.MCUInfo)
+            return SombraImage(newPath, self.mcuInfo)
         else:
-            newImg = self.GetCopyImage(newPath)
-            newImg.Modify(adress,value)
+            newImg = self.createCopy(newPath)
+            newImg.modifyImage(iAdress, iNewValue)
             return newImg
 
-    def ValidateCoordinate(self, c_coordinate):
-        McuInfo = self.MCUInfo
-        if c_coordinate.x < McuInfo.min.x:
-            if c_coordinate.y > McuInfo.min.y:
-                c_coordinate.y -= 1
-                c_coordinate.x = McuInfo.max.x + c_coordinate.x - McuInfo.min.x + 1
+    def ValidateMcuCoordinate(self, oCoordinate):
+        if oCoordinate.x < self.mcuInfo.min.x:
+            if oCoordinate.y > self.mcuInfo.min.y:
+                oCoordinate.y -= 1
+                oCoordinate.x = self.mcuInfo.max.x + oCoordinate.x - self.mcuInfo.min.x + 1
             else:
                 return coordinate(-1,-1)
-        elif c_coordinate.x > McuInfo.max.x:
-            if c_coordinate.y < McuInfo.max.y:
-                c_coordinate.y += 1
-                c_coordinate.x = McuInfo.min.x + c_coordinate.x - McuInfo.max.x - 1
+        elif oCoordinate.x > self.mcuInfo.max.x:
+            if oCoordinate.y < self.mcuInfo.max.y:
+                oCoordinate.y += 1
+                oCoordinate.x = self.mcuInfo.min.x + oCoordinate.x - self.mcuInfo.max.x - 1
             else:
                 return coordinate(-1,-1)
-        return c_coordinate
+        return oCoordinate

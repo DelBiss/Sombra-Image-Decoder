@@ -1,5 +1,4 @@
 import sys
-import time
 #import datetime
 from datetime import tzinfo, timedelta, datetime
 class USTimeZone(tzinfo):
@@ -78,7 +77,7 @@ while 1:
         dataIndex+=1
     else:
         new_pic += o
-    count=count+1
+    count += 1
 #for o,n in zip(orig.read()): #, n in zip(orig.read(), new.read()):
     
 #    if o != n:
