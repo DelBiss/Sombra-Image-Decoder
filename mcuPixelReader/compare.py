@@ -9,11 +9,11 @@ from util import coordinate
 def CompareRow(mcu_y, img1, img2):
     score = cScore.RangeScore(util.MinMax(img1.mcuInfo.min.x, img1.mcuInfo.max.x))
     for x_col in range(img1.mcuInfo.min.x, img1.mcuInfo.max.x):
-        score.AddScore(CompareImg(coordinate(x_col, mcu_y), img1, img2))
+        score.AddScore(CompareMCU(coordinate(x_col, mcu_y), img1, img2))
     return score
 
 
-def CompareImg(mcu_coordinate, img1, img2):
+def CompareMCU(mcu_coordinate, img1, img2):
     mcu1 = mcuPixelReader.MCU(img1, mcu_coordinate)
     mcu2 = mcuPixelReader.MCU(img2, mcu_coordinate)
     return ComparePixel(mcu1, mcu2)
@@ -23,7 +23,7 @@ def CompareResult(mcu_coordinate, img1, img2):
     score = cScore.RangeScore(img1.MCUInfo.testRange)
     for testOffset in range(img1.MCUInfo.testRange.min, img1.MCUInfo.testRange.max):
         test_coordinate = img1.ValidateMcuCoordinate(coordinate(mcu_coordinate.x + testOffset, mcu_coordinate.y))
-        score.AddScore(CompareImg(test_coordinate, img1, img2))
+        score.AddScore(CompareMCU(test_coordinate, img1, img2))
     return score
 
 
