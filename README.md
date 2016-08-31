@@ -9,5 +9,8 @@ This script contain those class:
 * SombraImage
   * Open an image file in 2 format: File and Image
   * Create an new image with a modification to a specific adress into the image
-  
+* mcuPixelReader
+    * Refer to a MCU of an img
+    * Return an Square array containing the RGB value of each pixel
+
 ... to continue...
